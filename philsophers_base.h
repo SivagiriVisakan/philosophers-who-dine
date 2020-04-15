@@ -15,8 +15,8 @@ enum philosopher_states
 {
     EATING=0,
     THINKING,
-    WAITING_FOR_FORK_LEFT,
-    WAITING_FOR_FORK_RIGHT
+    WAITING_FOR_FORK_ONE,
+    WAITING_FOR_FORK_TWO
 };
 
 struct philosopher_state

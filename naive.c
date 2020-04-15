@@ -38,7 +38,7 @@ int modulo(int x,int N){
 int get_left(int i)
 {
     int left_fork_index = i;
-    philosopher_info[i].current_state = WAITING_FOR_FORK_LEFT;
+    philosopher_info[i].current_state = WAITING_FOR_FORK_ONE;
     sem_wait(&forks[left_fork_index]);
     forks_state_info[left_fork_index].owner_id = i;
     return left_fork_index;
@@ -47,7 +47,7 @@ int get_left(int i)
 int get_right(int i)
 {
     int right_fork_index = modulo(i-1, TOTAL_PHILOSOPHERS);
-    philosopher_info[i].current_state = WAITING_FOR_FORK_RIGHT;
+    philosopher_info[i].current_state = WAITING_FOR_FORK_TWO;
     sem_wait(&forks[right_fork_index]);
     forks_state_info[right_fork_index].owner_id = i;
     return right_fork_index;
