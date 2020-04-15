@@ -17,11 +17,13 @@ pthread_t philosopher_thread_data[TOTAL_PHILOSOPHERS];
 struct philosopher_state philosopher_info[TOTAL_PHILOSOPHERS];
 struct  fork_info forks_state_info[TOTAL_PHILOSOPHERS];
 
+char message_to_print[5][200] = {0};
+
 char *state_messages[] = { 
     "Eating",
     "Thinking",
-    "Waiting for left fork",
-    "Waiting for right fork"
+    "Waiting for lower indexed fork",
+    "Waiting for higher indexed fork"
 };
 
 struct coordinates
@@ -33,22 +35,29 @@ int modulo(int x,int N){
     return (x % N + N) %N;
 }
 
-int get_left(int i)
+int get_lower_fork(int i)
 {
     int left_fork_index = i;
+    int right_fork_index = modulo(i-1, TOTAL_PHILOSOPHERS);
+    int to_pick = (left_fork_index < right_fork_index)? left_fork_index : right_fork_index;
+
     philosopher_info[i].current_state = WAITING_FOR_FORK_ONE;
-    sem_wait(&forks[left_fork_index]);
-    forks_state_info[left_fork_index].owner_id = i;
-    return left_fork_index;
+    sem_wait(&forks[to_pick]);
+    forks_state_info[to_pick].owner_id = i;
+    return to_pick;
 }
 
-int get_right(int i)
+
+int get_higher_fork(int i)
 {
+    int left_fork_index = i;
     int right_fork_index = modulo(i-1, TOTAL_PHILOSOPHERS);
+    int to_pick = (left_fork_index > right_fork_index)? left_fork_index : right_fork_index;
+
     philosopher_info[i].current_state = WAITING_FOR_FORK_TWO;
-    sem_wait(&forks[right_fork_index]);
-    forks_state_info[right_fork_index].owner_id = i;
-    return right_fork_index;
+    sem_wait(&forks[to_pick]);
+    forks_state_info[to_pick].owner_id = i;
+    return to_pick;
 }
 
 void eat(int i)
@@ -74,19 +83,19 @@ void *philosopher(void *arg)
     {
 
         think(i);
-        int left = get_left(i);
-        snprintf(philosopher_info[i].fork_held, 200, "Acquired left - having  %d\n\0",left);
-        // sleep(5);   // Un-comment this line to create a deadlock
-        int right = get_right(i);
-        snprintf(philosopher_info[i].fork_held, 200, "Acquired left and right - having  %d - %d\n\0", left,right);
+        int fork1 = get_lower_fork(i);
+        snprintf(philosopher_info[i].fork_held, 200, "Acquired lower - having  %d\n\0",fork1);
+        sleep(5);   // Un-comment this line to create a deadlock
+        int fork2 = get_higher_fork(i);
+        snprintf(philosopher_info[i].fork_held, 200, "Acquired lower and higher - having  %d - %d\n\0", fork1,fork2);
         eat(i);
         // put_down_left(i); TODO: Implement by extracting the sem post and print to a seperate function
         // put_down_right(i);
-        sem_post(&forks[left]);
-        forks_state_info[left].owner_id = -1;
-        snprintf(philosopher_info[i].fork_held, 200, "  Dropped left - having - %d\n\0", right);
-        sem_post(&forks[right]);
-        forks_state_info[right].owner_id = -1;
+        sem_post(&forks[fork1]);
+        forks_state_info[fork1].owner_id = -1;
+        snprintf(philosopher_info[i].fork_held, 200, "  Dropped lower - having - %d\n\0", fork2);
+        sem_post(&forks[fork2]);
+        forks_state_info[fork2].owner_id = -1;
         snprintf(philosopher_info[i].fork_held, 200, "\n\0");
 
     }
