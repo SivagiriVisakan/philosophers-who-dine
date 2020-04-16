@@ -65,6 +65,7 @@ void think(int i)
 {
     philosopher_info[i].current_state = THINKING;
     sleep(5);
+    sleep(rand() % 20 + 2);
 }
 
 
@@ -98,6 +99,7 @@ void *philosopher(void *arg)
 int main(int argc, char const *argv[])
 {
 
+    srand(time(NULL));
     philosopher_coordinates[0].x = 0;
     philosopher_coordinates[0].y = 35;
 
