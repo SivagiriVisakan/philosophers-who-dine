@@ -62,44 +62,11 @@
      <string>PushButton</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>330</y>
-      <width>71</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap resource="resources.qrc">:/assets/assets/food.png</pixmap>
-    </property>
-   </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="resources.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>repaint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>134</x>
-     <y>122</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>650</x>
-     <y>309</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
