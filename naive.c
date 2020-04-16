@@ -17,8 +17,6 @@ pthread_t philosopher_thread_data[TOTAL_PHILOSOPHERS];
 struct philosopher_state philosopher_info[TOTAL_PHILOSOPHERS];
 struct  fork_info forks_state_info[TOTAL_PHILOSOPHERS];
 
-char message_to_print[5][200] = {0};
-
 char *state_messages[] = { 
     "Eating",
     "Thinking",
@@ -127,7 +125,6 @@ int main(int argc, char const *argv[])
     {
         for(int i = 0; i < TOTAL_PHILOSOPHERS; i++)
         {
-            // mvprintw(philosopher_coordinates[i].x, philosopher_coordinates[i].y, message_to_print[i]);
             char *message = state_messages[philosopher_info[i].current_state];
             mvprintw(philosopher_coordinates[i].x, philosopher_coordinates[i].y,"%d. %s\n", i, message);
             char forks_message[100] = {'\0'};
