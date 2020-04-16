@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/assets">
+        <file>assets/table.png</file>
+        <file>assets/fork2.png</file>
+        <file>assets/fork3.png</file>
+        <file>assets/fork4.png</file>
+        <file>assets/fork5.png</file>
+        <file>assets/fork1.png</file>
+        <file>assets/philosopher4.png</file>
+        <file>assets/philosopher5.png</file>
+        <file>assets/philosopher3.png</file>
+        <file>assets/philosopher2.png</file>
+        <file>assets/philosopher1.png</file>
+        <file>assets/food.png</file>
+    </qresource>
+</RCC>
