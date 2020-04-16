@@ -65,6 +65,7 @@ void think(int i)
 {
     philosopher_info[i].current_state = THINKING;
     sleep(5);
+    sleep(rand() % 20 + 2);
 }
 
 
@@ -98,6 +99,7 @@ void *philosopher(void *arg)
 int main(int argc, char const *argv[])
 {
 
+    srand(time(NULL));
     philosopher_coordinates[0].x = 0;
     philosopher_coordinates[0].y = 35;
 
@@ -114,12 +116,13 @@ int main(int argc, char const *argv[])
     philosopher_coordinates[4].y = 10;
 
     key_t philosophers_state_key = 567;
-    key_t forks_state_key = 568;
+    key_t forks_state_key = 569;
 
    // shmget returns an identifier in shmid
    int shmid = shmget(philosophers_state_key, sizeof(struct philosopher_state) * TOTAL_PHILOSOPHERS, 0666|IPC_CREAT);
    if (shmid < 0) {
         printf("*** shmget error (can't acquire for philosopher's state) ***\n");
+        perror("shmget error:");
         exit(1);
    }
     philosopher_info = (struct philosopher_state *) shmat(shmid,NULL,0);
@@ -128,6 +131,7 @@ int main(int argc, char const *argv[])
    shmid = shmget(forks_state_key, sizeof(struct fork_info) * TOTAL_PHILOSOPHERS, 0666|IPC_CREAT);
    if (shmid < 0) {
         printf("*** shmget error (can't acquire for fork's state) ***\n");
+        perror("shmget error:");
         exit(1);
    }
     forks_state_info = (struct fork_info *) shmat(shmid,NULL,0);
@@ -137,7 +141,11 @@ int main(int argc, char const *argv[])
     for (int i = 0; i < TOTAL_PHILOSOPHERS; i++)
     {
         sem_init(&forks[i], 0, 1);
+        forks_state_info[i].id = i;
+        forks_state_info[i].owner_id = -1;
+
         philosopher_info[i].total_meals_eaten = 0;
+        philosopher_info[i].id = i;
         philosopher_info[i].forks_allowed[0] = &forks_state_info[i];
         philosopher_info[i].forks_allowed[1] = &forks_state_info[modulo(i-1, TOTAL_PHILOSOPHERS)];
         pthread_create(&philosopher_thread_data[i], NULL, &philosopher, (void *)i);
@@ -149,7 +157,7 @@ int main(int argc, char const *argv[])
         for(int i = 0; i < TOTAL_PHILOSOPHERS; i++)
         {
             char *message = state_messages[philosopher_info[i].current_state];
-            mvprintw(philosopher_coordinates[i].x, philosopher_coordinates[i].y,"%d. %s\n", i, message);
+            mvprintw(philosopher_coordinates[i].x, philosopher_coordinates[i].y,"%d. %s\n", philosopher_info[i].id, message);
             char forks_message[100] = {'\0'};
             mvprintw(philosopher_coordinates[i].x+2, philosopher_coordinates[i].y, philosopher_info[i].fork_held);
             mvprintw(philosopher_coordinates[i].x+3, philosopher_coordinates[i].y, "Total meals had: %d\n", philosopher_info[i].total_meals_eaten);

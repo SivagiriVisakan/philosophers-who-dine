@@ -8,6 +8,7 @@
  */
 struct fork_info
 {
+    int id;
     int owner_id; // The number of the philosopher owning it or -1 if it is free on the table
 };
 
@@ -21,7 +22,7 @@ enum philosopher_states
 
 struct philosopher_state
 {
-
+    int id;
     enum philosopher_states current_state;
     struct fork_info *forks_allowed[2];
     unsigned int total_meals_eaten;

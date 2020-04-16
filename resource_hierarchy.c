@@ -17,8 +17,6 @@ pthread_t philosopher_thread_data[TOTAL_PHILOSOPHERS];
 struct philosopher_state philosopher_info[TOTAL_PHILOSOPHERS];
 struct  fork_info forks_state_info[TOTAL_PHILOSOPHERS];
 
-char message_to_print[5][200] = {0};
-
 char *state_messages[] = { 
     "Eating",
     "Thinking",

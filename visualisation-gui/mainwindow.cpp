@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::initSharedMemory()
 {
     key_t philosophers_state_key = 567;
-    key_t forks_state_key = 568;
+    key_t forks_state_key = 569;
 
    // shmget returns an identifier in shmid
    int shmid = shmget(philosophers_state_key, sizeof(struct philosopher_state) * TOTAL_PHILOSOPHERS, 0666);
