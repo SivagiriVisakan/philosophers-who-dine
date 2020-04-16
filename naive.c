@@ -6,6 +6,8 @@
 #include <ncurses.h>
 #include <string.h>
 #include <semaphore.h> 
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #include "philsophers_base.h"
 
@@ -14,8 +16,8 @@
 sem_t forks[TOTAL_PHILOSOPHERS];
 pthread_t philosopher_thread_data[TOTAL_PHILOSOPHERS];
 
-struct philosopher_state philosopher_info[TOTAL_PHILOSOPHERS];
-struct  fork_info forks_state_info[TOTAL_PHILOSOPHERS];
+struct philosopher_state *philosopher_info;
+struct  fork_info *forks_state_info;
 
 char *state_messages[] = { 
     "Eating",
@@ -111,9 +113,30 @@ int main(int argc, char const *argv[])
     philosopher_coordinates[4].x = 15;
     philosopher_coordinates[4].y = 10;
 
+    key_t philosophers_state_key = 567;
+    key_t forks_state_key = 568;
+
+   // shmget returns an identifier in shmid
+   int shmid = shmget(philosophers_state_key, sizeof(struct philosopher_state) * TOTAL_PHILOSOPHERS, 0666|IPC_CREAT);
+   if (shmid < 0) {
+        printf("*** shmget error (can't acquire for philosopher's state) ***\n");
+        exit(1);
+   }
+    philosopher_info = (struct philosopher_state *) shmat(shmid,NULL,0);
+
+   // shmget returns an identifier in shmid
+   shmid = shmget(forks_state_key, sizeof(struct fork_info) * TOTAL_PHILOSOPHERS, 0666|IPC_CREAT);
+   if (shmid < 0) {
+        printf("*** shmget error (can't acquire for fork's state) ***\n");
+        exit(1);
+   }
+    forks_state_info = (struct fork_info *) shmat(shmid,NULL,0);
+
+
+
     for (int i = 0; i < TOTAL_PHILOSOPHERS; i++)
     {
-        sem_init(&forks[i], 0, 1); 
+        sem_init(&forks[i], 0, 1);
         philosopher_info[i].total_meals_eaten = 0;
         philosopher_info[i].forks_allowed[0] = &forks_state_info[i];
         philosopher_info[i].forks_allowed[1] = &forks_state_info[modulo(i-1, TOTAL_PHILOSOPHERS)];
@@ -131,6 +154,7 @@ int main(int argc, char const *argv[])
             mvprintw(philosopher_coordinates[i].x+2, philosopher_coordinates[i].y, philosopher_info[i].fork_held);
             mvprintw(philosopher_coordinates[i].x+3, philosopher_coordinates[i].y, "Total meals had: %d\n", philosopher_info[i].total_meals_eaten);
 
+            mvprintw(0, 5*i, " %d ", forks_state_info[i].owner_id);
         }
             refresh();
 
@@ -140,6 +164,8 @@ int main(int argc, char const *argv[])
     {
 		pthread_join(philosopher_thread_data[i], NULL);
 	}
-	return 0;
+
+    shmctl(shmid,IPC_RMID,NULL);
+
     return 0;
 }
