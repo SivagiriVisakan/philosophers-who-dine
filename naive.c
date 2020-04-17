@@ -12,12 +12,16 @@
 #include "philsophers_base.h"
 
 #define TOTAL_PHILOSOPHERS 5
+#define LOG(message) logToFile(logFile, message, &fileMutex)
 
 sem_t forks[TOTAL_PHILOSOPHERS];
 pthread_t philosopher_thread_data[TOTAL_PHILOSOPHERS];
 
 struct philosopher_state *philosopher_info;
 struct  fork_info *forks_state_info;
+
+FILE *logFile;
+pthread_mutex_t fileMutex;
 
 char *state_messages[] = { 
     "Eating",
@@ -33,6 +37,15 @@ struct coordinates
 
 int modulo(int x,int N){
     return (x % N + N) %N;
+}
+
+
+void logToFile(FILE *file, char *message, pthread_mutex_t *mutex)
+{
+    pthread_mutex_lock(&mutex);
+    fprintf(file, "%s\n", message);
+    fflush(file);
+    pthread_mutex_unlock(&mutex);
 }
 
 int get_left(int i)
@@ -75,13 +88,16 @@ void *philosopher(void *arg)
     int i = (int *)arg;
     while (1)
     {
-
+        LOG(philosopher_info[i].fork_held);
         think(i);
         int left = get_left(i);
         snprintf(philosopher_info[i].fork_held, 200, "Acquired left - having  %d\n\0",left);
+        LOG(philosopher_info[i].fork_held);
+
         // sleep(5);   // Un-comment this line to create a deadlock
         int right = get_right(i);
         snprintf(philosopher_info[i].fork_held, 200, "Acquired left and right - having  %d - %d\n\0", left,right);
+        LOG(philosopher_info[i].fork_held);
         eat(i);
         // put_down_left(i); TODO: Implement by extracting the sem post and print to a seperate function
         // put_down_right(i);
@@ -100,6 +116,8 @@ int main(int argc, char const *argv[])
 {
 
     srand(time(NULL));
+    pthread_mutex_init(&fileMutex, NULL);
+    logFile = fopen("dine.log", "w+");
     philosopher_coordinates[0].x = 0;
     philosopher_coordinates[0].y = 35;
 
