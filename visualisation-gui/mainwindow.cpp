@@ -100,6 +100,7 @@ void MainWindow::drawPhilosophers()
         philosophers[i] = new QLabel("test", ui->centralWidget);
         philosophers[i]->setPixmap(bg);
         philosophers[i]->setGeometry(0, 0, 70, 70);
+        philosophers[i]->setStyleSheet("background: none");
 
         QPoint position = calculatePoint(r, degree, philosophers[i]);
         philosophers[i]->move(position);
@@ -177,6 +178,7 @@ void MainWindow::drawForksAndFood()
         forks[i]->setGeometry(0, 0, 50, 50);
 
 
+        forks[i]->setStyleSheet("background: none");
         QPoint end = calculatePoint(r, degree, forks[i]);
         forks[i]->setTableCoordinate(end.x(), end.y());
         forks[i]->move(end);
@@ -197,6 +199,7 @@ void MainWindow::drawForksAndFood()
         foods[i] = new QLabel("food", ui->centralWidget);
         foods[i]->setPixmap(bg);
         foods[i]->setGeometry(0, 0, 70, 70);
+        foods[i]->setStyleSheet("background: none");
 
         QPoint end = calculatePoint(r, degree, foods[i]);
         foods[i]->move(end);
@@ -215,6 +218,7 @@ void MainWindow::setupDiningRoom()
 
     ui->centerPoint->move(width() / 2 - ui->centerPoint->width() / 2, height() / 2 - ui->centerPoint->height() / 2);
     this->centerPoint = ui->centerPoint->pos();
+    ui->table->move(centerPoint.x() - ui->table->width() / 2, centerPoint.y() - ui->table->height() / 2);
 
     drawForksAndFood();
     drawPhilosophers();

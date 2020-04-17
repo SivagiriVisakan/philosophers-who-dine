@@ -9,12 +9,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1301</width>
-    <height>620</height>
+    <width>1519</width>
+    <height>684</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Dining Philosophers Visualisation</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color:#F2F9FC</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="table">
@@ -41,6 +47,10 @@
       <width>20</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: none
+</string>
     </property>
     <property name="text">
      <string>.</string>
