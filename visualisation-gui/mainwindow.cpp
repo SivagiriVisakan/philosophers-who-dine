@@ -168,10 +168,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setupDiningRoom();
     initSharedMemory();
-
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(checkForStatusUpdates()));
-    timer->start(2000);
+    timer->start(800);
 
 }
 
