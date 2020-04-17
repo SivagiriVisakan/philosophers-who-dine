@@ -27,6 +27,37 @@ void MainWindow::onButtonClick()
 
 }
 
+char* getTextForState(enum philosopher_states s)
+{
+    switch (s) {
+    case EATING:
+        return "Eating";
+    case THINKING:
+        return "Thinking";
+    case WAITING_FOR_FORK_ONE:
+    case WAITING_FOR_FORK_TWO:
+        return "Waiting for fork";
+    default:
+        return "Unknown state.";
+    }
+}
+
+QString formatForkState(struct fork_info f)
+{
+    QString result;
+    result.sprintf("<span style='color: #0091EA; font-size: 18px'>Fork %d: </span><span style='color: #3D3B3B; font-size: 17px'>%d</span><br/>", f.id+1, f.owner_id+1);
+    return result;
+}
+
+
+QString formatPhilosopherState(struct philosopher_state p)
+{
+    QString result;
+    result.sprintf("<h3 style='color: #FF356B;'>P%d.</h3> <span style='color: #0091EA'>State: <span style='color: #3D3B3B'>%s</span></span><br/> %s",
+                   p.id+1, getTextForState(p.current_state), p.fork_held);
+    return result;
+}
+
 void MainWindow::checkForStatusUpdates()
 {
 
@@ -38,6 +69,8 @@ void MainWindow::checkForStatusUpdates()
     };
 
     qInfo() << state_messages[philosophers_state_info[0].current_state];
+    QString a;
+    QString forksInfoText;
     for(int i=0; i < TOTAL_PHILOSOPHERS; i++)
     {
         Fork *f = forks[i];
@@ -49,12 +82,17 @@ void MainWindow::checkForStatusUpdates()
         }
         else {
             int differenceRange =  i % 2 == 0? 5:0; // The difference in degrees
-            int r = 280;
+            int r = 300;
             QPoint end = calculatePoint(r, philosopherDegrees[ownerIndex] + differenceRange, f);
             f->moveToPoint(end);
 
         }
+        a.append(formatPhilosopherState(philosophers_state_info[i]));
+        forksInfoText.append(formatForkState(forks_state_info[i]));
     }
+    ui->philosopherInfoLabel->setHtml(a);
+    ui->forkInfoLabel->setHtml(forksInfoText);
+    ui->forkInfoLabel->setFixedSize(ui->forkInfoLabel->width(), ui->forkInfoLabel->document()->size().height() + 10);
 }
 
 QPoint MainWindow::calculatePoint(int radius, double degree, const QWidget *w)
@@ -157,10 +195,9 @@ void MainWindow::initSharedMemory()
         exit(1);
    }
     forks_state_info = (struct fork_info *) shmat(shmid,NULL,0);
-
-
-
 }
+
+
 void MainWindow::drawForksAndFood()
 {
     int r = foodAndForksRadius;
@@ -176,7 +213,6 @@ void MainWindow::drawForksAndFood()
         forks[i] = new Fork(i, 0, 0, ui->centralWidget);
         forks[i]->setPixmap(bg);
         forks[i]->setGeometry(0, 0, 50, 50);
-
 
         forks[i]->setStyleSheet("background: none");
         QPoint end = calculatePoint(r, degree, forks[i]);
