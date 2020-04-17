@@ -6,24 +6,29 @@
 #include <QDesktopWidget>
 #include <QDebug>
 #include <QPushButton>
-#include <QTimer>
 #include <cmath>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <stdio.h>
+#include <QFile>
+
 // TODO: Remove this or make is meaningful
 // Note: This is all for debug right now.
 void MainWindow::onButtonClick()
 {
 
-    moveForkToPhilosopher(0, 0);
-    moveForkToPhilosopher(0, 4);
+    if(isVisualisationEnabled)
+    {
+        this->isVisualisationEnabled = false;
+        timer->stop();
+        ui->pushButton->setText("Resume");
+    }
+    else {
+        this->isVisualisationEnabled = true;
+        timer->start();
+        ui->pushButton->setText("Pause");
+    }
 
-//    moveForkToPhilosopher(1, 0);
-    moveForkToPhilosopher(1, 1);
-
-    forks[1]->moveToTable();
-    qInfo() << philosophers_state_info[0].fork_held;
 
 }
 
@@ -93,6 +98,15 @@ void MainWindow::checkForStatusUpdates()
     ui->philosopherInfoLabel->setHtml(a);
     ui->forkInfoLabel->setHtml(forksInfoText);
     ui->forkInfoLabel->setFixedSize(ui->forkInfoLabel->width(), ui->forkInfoLabel->document()->size().height() + 10);
+
+    QFile inputFile(QString("../dine.log"));
+    inputFile.open(QIODevice::ReadOnly);
+    if (!inputFile.isOpen())
+        qInfo() << "Error reading file";
+
+    QTextStream stream(&inputFile);
+    QString line = stream.readLine();
+    ui->logViewer->setText(stream.readAll());
 }
 
 QPoint MainWindow::calculatePoint(int radius, double degree, const QWidget *w)
@@ -166,9 +180,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(onButtonClick()));
 
+    this->isVisualisationEnabled = true;
+
     setupDiningRoom();
     initSharedMemory();
-    QTimer *timer = new QTimer(this);
+    timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(checkForStatusUpdates()));
     timer->start(800);
 

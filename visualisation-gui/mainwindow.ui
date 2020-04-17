@@ -62,14 +62,38 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>110</y>
-      <width>89</width>
+      <x>10</x>
+      <y>0</y>
+      <width>121</width>
       <height>25</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">
+QPushButton {
+	background-color: #EEF5F6;
+	color: #0091EA;
+	border: 1px solid #00B0FF;
+	padding: 4px 22px;
+	border-radius: 50%;
+
+}
+
+QPushButton:hover {
+	background-color: #00B0FF;
+	color: #ffffff;
+
+}
+
+QPushButton:pressed {
+	color: #FFFFFF;
+}</string>
+    </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Pause</string>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -96,6 +120,16 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QTextBrowser" name="logViewer">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>30</y>
+      <width>361</width>
+      <height>661</height>
+     </rect>
+    </property>
    </widget>
   </widget>
  </widget>

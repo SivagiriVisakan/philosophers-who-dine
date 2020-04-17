@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QTimer>
 #include "fork.h"
 #include "../philsophers_base.h"
 
@@ -30,7 +31,10 @@ private:
     QLabel *foods[5];
     QLabel *philosophers[5];
     QPoint centerPoint; // The center of the screen.
+    QTimer *timer; // To update the GUI periodically
     int philosopherDegrees[5]; //  The degree relative to center at which the philosophers are placed.
+
+    bool isVisualisationEnabled; // Visualisation will update only if this is enabled
 
     struct philosopher_state *philosophers_state_info;
     struct fork_info *forks_state_info;
